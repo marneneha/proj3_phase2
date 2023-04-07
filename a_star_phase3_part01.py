@@ -3,7 +3,7 @@ import time
 import copy
 import cv2
 # uncomment below line if running in colab
-from google.colab.patches import cv2_imshow
+# from google.colab.patches import cv2_imshow
 import heapq as hq
 import numpy as np
 import math
