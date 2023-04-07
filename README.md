@@ -5,18 +5,31 @@ This submission is for project 3 phase 2 part 01
 
 Implementation of the A star Algorithm for a Point Robot with non holonomic constraints 
 
-Required libraries - time, copy, opencv (4 and above), numpy, math and heapq
+<ins>Team members
+
+Neha Marne: nmanrne: 119400210
+  
+Anukriti Singh: anukriti: 119288306
+
+<ins>Required libraries 
+  
+ time, copy, opencv (4 and above), numpy, math and heapq
 
 
-Run code a_star_project3_part01.py 
+<ins>Code
+  
+Run code ```a_star_project3_part01.py``` 
+
+Enter the start position and goal position coordinate values as integers and you can also change the ```manual_input = False```
 
 
-Enter the start position and goal position coordinate values as integers
+<ins>Output 
 
+The final output is the video generated and saved on the system and it prints the total run time
 
-Output - The final output is the video generated and saved on the system and it prints the total run time
-
-Test case 1 - (50,50) and (550,220)
+<ins>Test case 1 
+  
+Start and Goal positions - (50,50) and (550,220)
 
 The video can be found here - [Link](https://drive.google.com/file/d/19alkcWQ6fVwDSAHpjWoOZecZYX_5Wq0_/view?usp=sharing)
 
@@ -27,7 +40,9 @@ Clearance - 5, rpm1 - 2 and rpm2 - 4
 Total time - 7s
 
 
-Test case 1 - (50,50) and (550,20)
+<ins>Test case 2 
+  
+Start and Goal positions - (50,50) and (550,20)
 
 The video can be found here - [Link](https://drive.google.com/file/d/1SLQjZbixjfkc9F1XBual4tVOsbaBF0dG/view?usp=sharing)
 
