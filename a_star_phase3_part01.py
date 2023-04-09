@@ -213,21 +213,33 @@ def action(node, parent_node_g_cost, canvas, rpm1, rpm2, R, L):
     x_initial, y_initial, theta_initial = node
     dt = 0.1
     for i in np.arange(0, 0.5, dt):
-      x = x_initial + (0.5*R*(rpm1+rpm2)*np.cos(np.deg2rad(theta_init)))*dt
-      y = y_initial + (0.5*R*(rpm1+rpm2)*np.sin(np.deg2rad(theta_init)))*dt
+      x = x_initial + (0.5*R*(rpm1+rpm2)*np.cos(np.deg2rad(theta_initial)))*dt
+      y = y_initial + (0.5*R*(rpm1+rpm2)*np.sin(np.deg2rad(theta_initial)))*dt
       theta = theta_initial + np.rad2deg(((R/L)*(rpm2 - rpm1))*dt)
-      g_cost = parent_node_g_cost + math.sqrt((x-x_init)**2+(y-y_init)**2)
+      g_cost = parent_node_g_cost + math.sqrt((x-x_initial)**2+(y-y_initial)**2)
     # cv2_imshow(canvas)    
     # print("x",x)
     # print("y",y)
     if not (0 <= x < canvas.shape[1] and 0 <= y < canvas.shape[0] and not obstacle_checkpoint(x, y, canvas)):
         return False, node, parent_node_g_cost, False
-
+# theta is in degree
     new_node = (x, y, theta)
     # print(canvas)
     # cv2_imshow(canvas)
     return True, new_node, g_cost, False
 
+def turtlebot_vel_calc(theta, RPML, RPMR):
+    RPML = RPML*2*np.pi/60
+    RPMR = RPML*2*np.pi/60
+    # 0.5*R*(vel_l+vel_r)np.cos(np.deg2rad(theta_init)
+    theta_init = theta
+    rad = 5
+    len = 5
+    Vel_x = 0.5*rad*(RPML+RPMR)*np.cos(np.deg2rad(theta_init))
+    Vel_y = 0.5*rad*(RPML+RPMR)*np.sin(np.deg2rad(theta_init))
+    linear_val = np.sqrt(Vel_x** 2 + Vel_y** 2) 
+    angular_vel = rad/len*(RPMR-RPML)
+    return linear_val, angular_vel
 def astar(start_position, final_position, canvas, rpm1, rpm2, R, L):
   # TO FILL
     output_video = cv2.VideoWriter('Proj3_neha_anukriti.avi', cv2.VideoWriter_fourcc(*'XVID'), 800, (canvas.shape[1], canvas.shape[0])) 
@@ -252,7 +264,13 @@ def astar(start_position, final_position, canvas, rpm1, rpm2, R, L):
         # pop new node
         new_closed_list_element = hq.heappop(open_list)
         # print(new_closed_list_element)
-        closed_list[tuple(new_closed_list_element[3])]=tuple(new_closed_list_element[4])
+        RPML, RPMR = new_closed_list_element[5]
+        theta = new_closed_list_element[3][2]
+        linear_val, angular_vel = turtlebot_vel_calc(theta, RPML, RPMR)
+        temp = tuple(new_closed_list_element[4])
+        vel = [0,0]#write v, theta here
+        temp_vel = tuple(vel)
+        closed_list[tuple(new_closed_list_element[3])]=(temp, temp_vel)
         # print(closed_list)
         parent_node = new_closed_list_element[3]
         parent_node_g_cost = new_closed_list_element[2]
@@ -312,7 +330,8 @@ def astar(start_position, final_position, canvas, rpm1, rpm2, R, L):
 def back_track(start_position, final_parent_node, output_video, closed_list, canvas):
     # print(bcolors.FAIL+"closted list is"+str(closed_list)+bcolors.ENDC)
     child_node = final_parent_node
-    parent_node = closed_list[child_node]
+    parent_node = closed_list[child_node][0]
+    action_traj = []
     # print("I AM HEREEEEE")
     # print(child_node)
     # print("final parent node in back track", parent_node)
@@ -324,11 +343,13 @@ def back_track(start_position, final_parent_node, output_video, closed_list, can
     while(child_node != parent_node):
         # print ("i am in while condition now")
         cv2.circle(canvas,(int(child_node[0]),int(child_node[1])),2,(0,120,120),-1)
-        # cv2.imshow('canvas',canvas)
-        cv2_imshow(canvas)
+        action_traj.append(list(closed_list[child_node][1]))
+        print(action_traj)
+        cv2.imshow('canvas',canvas)
+        # cv2_imshow(canvas)
         # cv2.waitKey(0)
         child_node = parent_node
-        parent_node = closed_list[child_node]
+        parent_node = closed_list[child_node][0]
         # time.sleep(1)
         output_video.write(canvas)
     # for k in closed_list:
@@ -343,11 +364,11 @@ if __name__ == '__main__':
     canvas = 255*np.ones((250,600,3), dtype="uint8")    # Creating a blank canvas/map
     print(bcolors.OKCYAN+"Thanks for running the code It was written by Neha and anukriti"+bcolors.ENDC)
     # radiaus and clearnce input
-    robot_radius, clearance, rpm1, rpm2 = get_robot_radius_clearance(manual_input=True)
+    robot_radius, clearance, rpm1, rpm2 = get_robot_radius_clearance(manual_input=False)
     # load map
     canvas = obstacles_map(canvas)
     # start and goal node input with angles in terms of tuple
-    start_position, final_position  = coord_input(canvas, manual_input=True) 
+    start_position, final_position  = coord_input(canvas, manual_input=False) 
     # Changing the input Cartesian Coordinates of the Map to Image Coordinates:15
     # print("final_position", final_position)
     start_position[1] = canvas.shape[0]-1 - start_position[1]
