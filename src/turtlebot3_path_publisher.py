@@ -11,6 +11,7 @@ import numpy as np
 import math
 import rospy
 from geometry_msgs.msg import Twist
+import pprint
 
 class bcolors:
     HEADER = '\033[95m'
@@ -29,13 +30,14 @@ twist = Twist()
 # function to draw the obstacles on a canvas map 
 def obstacles_map(canvas):
     # rectangle 1 obstacle with the given dimensions, the thickness of 5mm is considered inwards
-    cv2.fillPoly(canvas, pts = [np.array([(100,150), (150,150), (150,250), (100,250)])], color = (255, 0, 0))
+    cv2.fillPoly(canvas, pts = [np.array([(150,75), (165,75), (165,200), (150,200)])], color = (255, 0, 0))
     # rectangle 2 obstacle with the given dimensions, the thickness of 5mm is considered inwards
-    cv2.fillPoly(canvas, pts = [np.array([(100,0), (150,0), (150,100), (100,100)])], color = (255, 0, 0))
+    cv2.fillPoly(canvas, pts = [np.array([(250,0), (265,0), (265,125), (250,125)])], color = (255, 0, 0))
+    cv2.circle(canvas, (400, 110), 50, color = (255, 0, 0), thickness=-1)
     # heaxgon obstacle with the given dimensions, the thickness of 5mm is considered inwards
-    cv2.fillPoly(canvas, pts = [np.array([(235,87),(300,50),(365,87),(365,162),(300,200),(235,162)])], color = (255, 0, 0))
+    # cv2.fillPoly(canvas, pts = [np.array([(235,87),(300,50),(365,87),(365,162),(300,200),(235,162)])], color = (255, 0, 0))
     # traingle obstacle with the given dimensions, the thickness of 5mm is considered inwards
-    cv2.fillPoly(canvas, pts = [np.array([(460,225), (510,125), (460,25)])], color = (255, 0, 0))
+    # cv2.fillPoly(canvas, pts = [np.array([(460,225), (510,125), (460,25)])], color = (255, 0, 0))
     # drawing the wall
     canvas[0:10,:]=(255,0,0)
     canvas[:,0:10]=(255,0,0)
@@ -237,16 +239,19 @@ def action(node, parent_node_g_cost, canvas, rpm1, rpm2, R, L):
     return True, new_node, g_cost, False, action_set
 
 def turtlebot_vel_calc(theta, RPML, RPMR):
+    # print(RPML,RPMR)
     RPML = RPML*2*np.pi/60
-    RPMR = RPML*2*np.pi/60
+    RPMR = RPMR*2*np.pi/60
     # 0.5*R*(vel_l+vel_r)np.cos(np.deg2rad(theta_init)
-    theta_init = theta
+    # print(RPML,RPMR)
     rad = 3.8
     len = 34
-    Vel_x = 0.5*rad*(RPML+RPMR)*np.cos(np.deg2rad(theta_init))
-    Vel_y = 0.5*rad*(RPML+RPMR)*np.sin(np.deg2rad(theta_init))
+    angular_vel = (rad/len)*(RPMR-RPML)
+    # print('angular vel',angular_vel)
+    theta_init = angular_vel+3.14*theta/180
+    Vel_x = 0.5*rad*(RPML+RPMR)*np.cos((theta_init))
+    Vel_y = 0.5*rad*(RPML+RPMR)*np.sin((theta_init))
     linear_val = np.sqrt(Vel_x** 2 + Vel_y** 2) 
-    angular_vel = rad/len*(RPMR-RPML)
     return linear_val, angular_vel
 def astar(start_position, final_position, canvas, rpm1, rpm2, R, L):
   # TO FILL
@@ -275,10 +280,12 @@ def astar(start_position, final_position, canvas, rpm1, rpm2, R, L):
         # print(new_closed_list_element)
         RPML, RPMR = new_closed_list_element[5]
         theta = new_closed_list_element[3][2]
+        # print('current action set is',RPML,RPMR,theta)
         linear_val, angular_vel = turtlebot_vel_calc(theta, RPML, RPMR)
         temp = tuple(new_closed_list_element[4])
         vel = [linear_val, angular_vel]#write v, theta here
         temp_vel = tuple(vel)
+        # print('temp vel is',temp_vel)
         closed_list[tuple(new_closed_list_element[3])]=(temp, temp_vel)
         # print(closed_list)
         parent_node = new_closed_list_element[3]
@@ -341,35 +348,37 @@ def back_track(start_position, final_parent_node, output_video, closed_list, can
     child_node = final_parent_node
     parent_node = closed_list[child_node][0]
     action_traj = []
-    print("I AM HEREEEEE")
-    print(child_node)
+    # print("I AM HEREEEEE")
+    # print(child_node)
     # print("final parent node in back track", parent_node)
     # parent_node = final_parent_node
     # child_node = closed_list[final_parent_node]
     # cv2.circle(canvas,(int(parent_node[0]),int(parent_node[1])),2,(255,255,255),-1)
-    print("child_node", child_node)
-    print("parent_node", parent_node)
+    # print("child_node", child_node)
+    # print("parent_node", parent_node)
     while(child_node != parent_node):
         # print ("i am in while condition now")
         cv2.circle(canvas,(int(child_node[0]),int(child_node[1])),2,(0,120,120),-1)
         action_traj.append(list(closed_list[child_node][1]))
-        print(action_traj)
-        cv2.imshow('canvas',canvas)
+        # cv2.imshow('canvas',canvas)
         # cv2_imshow(canvas)
         # cv2.waitKey(0)
         child_node = parent_node
         parent_node = closed_list[child_node][0]
         # time.sleep(1)
         output_video.write(canvas)
+    # print(action_traj)
 
-    while(len(action_traj)):
-        lin_vel, ang_vel = action_traj.pop()
+    for i in reversed(action_traj):
+        # print("m here", i)
+        lin_vel, ang_vel = i
         twist.linear.x = lin_vel/10
         twist.linear.y = 0.0
         twist.linear.z = 0.0
         twist.angular.x = 0.0
         twist.angular.y = 0.0
         twist.angular.z = ang_vel*10
+        print(twist)
         vel_pub.publish(twist)
         rate.sleep()
     # for k in closed_list:
@@ -381,14 +390,14 @@ def back_track(start_position, final_parent_node, output_video, closed_list, can
 
 if __name__ == '__main__':
     
-    canvas = 255*np.ones((250,600,3), dtype="uint8")    # Creating a blank canvas/map
+    canvas = 255*np.ones((200,600,3), dtype="uint8")    # Creating a blank canvas/map
     print(bcolors.OKCYAN+"Thanks for running the code It was written by Neha and anukriti"+bcolors.ENDC)
     # radiaus and clearnce input
-    robot_radius, clearance, rpm1, rpm2 = get_robot_radius_clearance(manual_input=False)
+    robot_radius, clearance, rpm1, rpm2 = get_robot_radius_clearance(manual_input=True)
     # load map
     canvas = obstacles_map(canvas)
     # start and goal node input with angles in terms of tuple
-    start_position, final_position  = coord_input(canvas, manual_input=False) 
+    start_position, final_position  = coord_input(canvas, manual_input=True) 
     # Changing the input Cartesian Coordinates of the Map to Image Coordinates:15
     # print("final_position", final_position)
     start_position[1] = canvas.shape[0]-1 - start_position[1]
