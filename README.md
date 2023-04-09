@@ -1,9 +1,9 @@
 # Project 3 - ENPM 661 - Planning for Autonomous Robotics
 
-# A_star_non_holonomic_constraints
-This submission is for project 3 phase 2 part 01
+# A_star_turtlebot
+This submission is for project 3 phase 2 part 02
 
-Implementation of the A star Algorithm for a Point Robot with non holonomic constraints 
+Implementation of the A star Algorithm for a Turtlebot Robot with non holonomic constraints 
 
 <ins>Team members
 
@@ -18,7 +18,8 @@ Anukriti Singh: anukriti: 119288306
 
 <ins>Code
   
-Run code ```a_star_project3_part01.py``` 
+Run code ```'roslaunch <package-name> <launch-file> <x_pos> <y_pos> <z_pos>'``` 
+
 
 Enter the start position and goal position coordinate values as integers and you can also change the ```manual_input = False```
 
