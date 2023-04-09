@@ -3,6 +3,10 @@
 # A_star_turtlebot
 This submission is for project 3 phase 2 part 02 and part01
 
+Part 01 repo link - https://github.com/AnukritiSinghh/A_star_non_holonomic_constraints
+
+Part 02 repo link - https://github.com/marneneha/proj3_phase2
+
 Implementation of the A star Algorithm for a Turtlebot Robot with non holonomic constraints 
 
 <ins>Team members
