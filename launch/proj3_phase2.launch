@@ -10,8 +10,10 @@
     <include file= "$(find gazebo_ros)/launch/empty_world.launch"> 
 		<arg name="world_name" value="$(find proj3_phase2)/world/map.world"/> 
 	</include>
-    <node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="turtlebot3_teleop_keyboard" output="screen" >
-    </node> 
+    <!-- <node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="turtlebot3_teleop_keyboard" output="screen" >
+    </node>  -->
+    <node pkg = "proj3_phase2" name = "turtlebot3_path_publisher_node" type = "turtlebot3_path_publisher.py" output = "screen">
+    </node>
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
     args="-urdf -model turtlebot3_$(arg model) -param robot_description -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
