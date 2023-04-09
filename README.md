@@ -30,11 +30,13 @@ The final output is the video generated and saved on the system and it prints th
 
 <ins>Test case 1 
   
-Start and Goal positions - (50,50) and (550,220)
+Start and Goal positions for Part 01 - (50,50) and (550,220)
+
+Start and Goal positions for Part 02 - (50,50) and (550,180)
 
 The video can be found here for PART 01 - [Link](https://drive.google.com/file/d/19alkcWQ6fVwDSAHpjWoOZecZYX_5Wq0_/view?usp=sharing)
 
-The video can be found here for PART 02 - [Link](https://drive.google.com/file/d/1Q98o7i68HYg8tW1OrIliwXY8RNIkUW-U/view?usp=sharing)
+The video can be found here for PART 02 - [Link](https://drive.google.com/file/d/1InSGaa2V8L4561bgx8zGX9vvzYIPq4gn/view?usp=sharing)
 
 Initial head angle - 0
 
@@ -49,7 +51,7 @@ Start and Goal positions - (50,50) and (550,20)
 
 The video can be found here for Part 01- [Link](https://drive.google.com/file/d/1SLQjZbixjfkc9F1XBual4tVOsbaBF0dG/view?usp=sharing)
 
-The video can be found here for Part 02- [Link](https://drive.google.com/file/d/1SLQjZbixjfkc9F1XBual4tVOsbaBF0dG/view?usp=sharing)
+The video can be found here for Part 02- [Link](https://drive.google.com/file/d/1Q98o7i68HYg8tW1OrIliwXY8RNIkUW-U/view?usp=sharing)
 
 Initial head angle - 0
 
